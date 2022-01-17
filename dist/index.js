@@ -28,14 +28,14 @@ function isVector(v) {
     return v.x != undefined;
 }
 function parseValue(input) {
-    if (input == "True")
+    if (input === "True")
         return true;
-    if (input == "False")
+    if (input === "False")
         return false;
-    if (input == "null")
+    if (input === "null")
         return null;
-    if (input == "")
-        return null;
+    if (input === "")
+        return "";
     if (!isNaN(parseFloat(input)))
         return parseFloat(input);
     if (input[0] == "(")
@@ -52,6 +52,8 @@ function saveValue(input) {
     if (input === false)
         return "False";
     if (input === null)
+        return "null";
+    if (input === "")
         return "";
     if (Array.isArray(input))
         return input.join(";");

@@ -33,10 +33,10 @@ function isVector(v: any): v is { x: number, y: number, z: number; } {
 }
 
 function parseValue(input: string): Value {
-	if (input == "True") return true;
-	if (input == "False") return false;
-	if (input == "null") return null;
-	if (input == "") return null;
+	if (input === "True") return true;
+	if (input === "False") return false;
+	if (input === "null") return null;
+	if (input === "") return "";
 	if (!isNaN(parseFloat(input))) return parseFloat(input);
 	if (input[0] == "(") return vector(input);
 	if (input.includes(";") && !isNaN(parseFloat(input.split(";")[0]))) return input.split(";").map(v => parseFloat(v));
@@ -46,7 +46,8 @@ function parseValue(input: string): Value {
 function saveValue(input: Value): string {
 	if (input === true) return "True";
 	if (input === false) return "False";
-	if (input === null) return "";
+	if (input === null) return "null";
+	if (input === "") return "";
 	if (Array.isArray(input)) return input.join(";");
 	if (isVector(input)) return `(${input.x},${input.y},${input.z})`;
 	return input.toString();

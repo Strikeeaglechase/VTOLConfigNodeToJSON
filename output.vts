@@ -1,11 +1,11 @@
 CustomScenario
 {
 	gameVersion = 1.3
-	campaignID = 
+	campaignID = null
 	campaignOrderIdx = -1
 	scenarioName = untitled
 	scenarioID = MAD-4 Missle avoid test
-	scenarioDescription = 
+	scenarioDescription = null
 	mapID = emptymap
 	vehicle = AH-94
 	multiplayer = False
@@ -16,8 +16,8 @@ CustomScenario
 	equipsConfigurable = False
 	baseBudget = 100000
 	isTraining = False
-	rtbWptID = 
-	refuelWptID = 
+	rtbWptID = null
+	refuelWptID = null
 	envName = day
 	selectableEnv = False
 	qsMode = Anywhere
@@ -34,14 +34,14 @@ CustomScenario
 			spawnChance = 100
 			lastValidPlacement = (98288.20336914062,212.156005859375,98455.60217285156)
 			editorPlacementMode = Unknown
-			spawnFlags = 
+			spawnFlags = null
 			UnitFields
 			{
-				unitGroup = 
+				unitGroup = null
 				moveSpeed = Slow_10
 				behavior = Parked
-				defaultPath = 
-				waypoint = 
+				defaultPath = null
+				waypoint = null
 				engageEnemies = True
 				detectionMode = Default
 				spawnOnStart = True
@@ -58,17 +58,17 @@ CustomScenario
 			spawnChance = 100
 			lastValidPlacement = (98281.57495117188,210.56935119628906,98477.04409790039)
 			editorPlacementMode = Unknown
-			spawnFlags = 
+			spawnFlags = null
 			UnitFields
 			{
 				radarUnits = 1
 				allowReload = False
 				reloadTime = 120
-				unitGroup = 
+				unitGroup = null
 				moveSpeed = Slow_10
 				behavior = Parked
-				defaultPath = 
-				waypoint = 
+				defaultPath = null
+				waypoint = null
 				engageEnemies = True
 				detectionMode = Default
 				spawnOnStart = False
@@ -86,12 +86,12 @@ CustomScenario
 			spawnChance = 100
 			lastValidPlacement = (97599.03515625,351.9296875,133318.046875)
 			editorPlacementMode = Air
-			spawnFlags = 
+			spawnFlags = null
 			UnitFields
 			{
 				startMode = FlightReady
 				initialSpeed = 77.074
-				unitGroup = 
+				unitGroup = null
 			}
 		}
 		UnitSpawner
@@ -104,13 +104,13 @@ CustomScenario
 			spawnChance = 100
 			lastValidPlacement = (97625.39990234375,-5,107613.6591796875)
 			editorPlacementMode = Sea
-			spawnFlags = 
+			spawnFlags = null
 			UnitFields
 			{
-				unitGroup = 
+				unitGroup = null
 				defaultBehavior = Parked
-				defaultWaypoint = 
-				defaultPath = 
+				defaultWaypoint = null
+				defaultPath = null
 				engageEnemies = True
 				detectionMode = Default
 				spawnOnStart = True

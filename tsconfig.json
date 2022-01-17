@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"target": "ES6",
+		"moduleResolution": "node",
+		"module": "esnext",
+		"allowSyntheticDefaultImports": true,
+		"outDir": "dist/",
+		"lib": [
+			"ES2019"
+		]
+	},
+	"include": [
+		"src/",
+	]
+}

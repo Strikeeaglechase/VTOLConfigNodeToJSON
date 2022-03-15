@@ -1,10 +1,5 @@
 import fs from "fs";
-const filter = "\t\r";
-const vtsData = fs.readFileSync("../input.vts", "ascii")
-    .split("")
-    .filter(c => !filter.includes(c))
-    .join("")
-    .split("\n");
+const vtsData = fs.readFileSync("../input.vts", "ascii");
 const nodeData = JSON.parse(fs.readFileSync("../input.json", "ascii"));
 function reader(data) {
     let head = 0;
@@ -27,6 +22,8 @@ function vector(input) {
 function isVector(v) {
     return v.x != undefined;
 }
+const validNumbers = "1234567890.-";
+const isNumric = (str) => str.split("").every(c => validNumbers.includes(c));
 function parseValue(input) {
     if (input === "True")
         return true;
@@ -36,11 +33,11 @@ function parseValue(input) {
         return null;
     if (input === "")
         return "";
-    if (!isNaN(parseFloat(input)))
+    if (isNumric(input))
         return parseFloat(input);
     if (input[0] == "(")
         return vector(input);
-    if (input.includes(";") && !isNaN(parseFloat(input.split(";")[0])))
+    if (input.includes(";") && !isNumric(input.split(";")[0]))
         return input.split(";").map(v => parseFloat(v));
     if (input.includes(";"))
         return input.split(";");
@@ -61,29 +58,31 @@ function saveValue(input) {
         return `(${input.x},${input.y},${input.z})`;
     return input.toString();
 }
-const [read, eof] = reader(vtsData);
-function _parse(name) {
-    read(); // Skip opening {
-    const values = {};
-    const nodes = [];
-    let isArr = true;
-    while (!eof()) {
-        const next = read();
-        if (next == "}") {
-            return { name, nodes, values };
-        }
-        if (next.includes("=")) {
-            isArr = false;
-            const name = next.substring(0, next.indexOf(" ="));
-            const value = parseValue(next.substring(next.indexOf("= ") + 2));
-            values[name] = value;
-        }
-        else {
-            nodes.push(_parse(next));
+function parse(data) {
+    const [read, eof] = reader(data.split("\n"));
+    function _parse(name) {
+        read(); // Skip opening {
+        const values = {};
+        const nodes = [];
+        let isArr = true;
+        while (!eof()) {
+            const next = read();
+            // console.log(`Child - ${next} Parent - ${name}`);
+            if (next == "}") {
+                // console.log(`Ret: ${name}`);
+                return { name, nodes, values };
+            }
+            if (next.includes("=")) {
+                isArr = false;
+                const name = next.substring(0, next.indexOf(" ="));
+                const value = parseValue(next.substring(next.indexOf("= ") + 2));
+                values[name] = value;
+            }
+            else {
+                nodes.push(_parse(next));
+            }
         }
     }
-}
-function parse() {
     return _parse(read());
 }
 function save(node, dpth = 0) {
@@ -97,5 +96,6 @@ function save(node, dpth = 0) {
     });
     return text + "\t".repeat(dpth) + "}\n";
 }
-fs.writeFileSync("../output.json", JSON.stringify(parse()));
-fs.writeFileSync("../output.vts", save(nodeData));
+// fs.writeFileSync("../output.json", JSON.stringify(parse(vtsData)));
+// fs.writeFileSync("../output.vts", save(nodeData));
+export { parse, save };

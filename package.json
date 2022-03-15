@@ -10,5 +10,7 @@
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
-	"dependencies": {}
+	"dependencies": {
+		"yaml": "^1.10.2"
+	}
 }

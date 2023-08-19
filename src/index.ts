@@ -1,9 +1,3 @@
-import fs from "fs";
-
-const vtsData = fs.readFileSync("../input.vts", "ascii");
-
-const nodeData = JSON.parse(fs.readFileSync("../input.json", "ascii"));
-
 function reader<T>(data: T[]): [() => T, () => boolean] {
 	let head = 0;
 	function read() {
@@ -35,9 +29,9 @@ function parseValue(input: string): Value {
 	if (input === "null") return null;
 	if (input === "") return "";
 	if (isNumric(input)) return parseFloat(input);
-	if (input[0] == "(") return vector(input);
-	if (input.includes(";") && !isNumric(input.split(";")[0])) return input.split(";").map(v => parseFloat(v));
-	if (input.includes(";")) return input.split(";");
+	if (input[0] == "(" && input[input.length - 1] == ")") return vector(input);
+	if (input.endsWith(";") && isNumric(input.split(";")[0])) return input.split(";").map(v => parseFloat(v));
+	if (input.endsWith(";")) return input.split(";");
 	return input;
 }
 function saveValue(input: Value): string {
@@ -56,33 +50,63 @@ type Value = string | number | boolean | string[] | {
 	z: number;
 } | number[];
 
-interface Node {
+class Node<ValueKey extends string = string> {
 	name: string;
-	values: Record<string, Value>;
-	nodes: Node[];
+	values: Record<ValueKey, Value> = {} as Record<ValueKey, Value>;
+	nodes: Node[] = [];
+	constructor(name: string) {
+		this.name = name;
+	}
+
+	addNode(node: Node) {
+		this.nodes.push(node);
+		return this;
+	}
+
+	getNode(name: string) {
+		return this.nodes.find(n => n.name == name);
+	}
+
+	getNodes(name: string, recursive = true) {
+		const matching: Node[] = [];
+		this.nodes.forEach(sn => {
+			if (recursive) sn.getNodes(name).forEach(n => matching.push(n));
+			if (sn.name == name) matching.push(sn);
+		});
+
+		return matching;
+	}
+
+	getValue<T extends Value = Value>(name: ValueKey): T {
+		return this.values[name] as T;
+	}
+
+	setValue(name: ValueKey, value: Value) {
+		this.values[name] = value;
+		return this;
+	}
 }
 
-function parse(data: string) {
-	const [read, eof] = reader(data.split("\n"));
+function parse<T extends string = string>(data: string[]): Node<T> {
+	const [read, eof] = reader(data);
 	function _parse(name: string): Node {
 		read(); // Skip opening {
-		const values: Record<string, Value> = {};
-		const nodes: Node[] = [];
+		// const values: Record<string, Value> = {};
+		// const nodes: Node[] = [];
+		const node = new Node(name);
 		let isArr = true;
 		while (!eof()) {
 			const next = read();
-			// console.log(`Child - ${next} Parent - ${name}`);
 			if (next == "}") {
-				// console.log(`Ret: ${name}`);
-				return { name, nodes, values };
+				return node;
 			}
 			if (next.includes("=")) {
 				isArr = false;
 				const name = next.substring(0, next.indexOf(" ="));
 				const value = parseValue(next.substring(next.indexOf("= ") + 2));
-				values[name] = value;
+				node.setValue(name, value);
 			} else {
-				nodes.push(_parse(next));
+				node.addNode(_parse(next));
 			}
 		}
 	}
@@ -102,8 +126,9 @@ function save(node: Node, dpth = 0): string {
 	return text + "\t".repeat(dpth) + "}\n";
 }
 
-
-// fs.writeFileSync("../output.json", JSON.stringify(parse(vtsData)));
-// fs.writeFileSync("../output.vts", save(nodeData));
-
+// import fs from "fs";
+// const file = fs.readFileSync("../input.vts", "utf-8");
+// const data = parse(file);
+// console.log(file.split("\t").join("").split("\r\n"));
+// fs.writeFileSync("../testout.json", JSON.stringify(data));
 export { parse, save, Node };

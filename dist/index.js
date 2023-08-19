@@ -1,6 +1,3 @@
-import fs from "fs";
-const vtsData = fs.readFileSync("../input.vts", "ascii");
-const nodeData = JSON.parse(fs.readFileSync("../input.json", "ascii"));
 function reader(data) {
     let head = 0;
     function read() {
@@ -35,11 +32,11 @@ function parseValue(input) {
         return "";
     if (isNumric(input))
         return parseFloat(input);
-    if (input[0] == "(")
+    if (input[0] == "(" && input[input.length - 1] == ")")
         return vector(input);
-    if (input.includes(";") && !isNumric(input.split(";")[0]))
+    if (input.endsWith(";") && isNumric(input.split(";")[0]))
         return input.split(";").map(v => parseFloat(v));
-    if (input.includes(";"))
+    if (input.endsWith(";"))
         return input.split(";");
     return input;
 }
@@ -58,28 +55,58 @@ function saveValue(input) {
         return `(${input.x},${input.y},${input.z})`;
     return input.toString();
 }
+class Node {
+    constructor(name) {
+        this.values = {};
+        this.nodes = [];
+        this.name = name;
+    }
+    addNode(node) {
+        this.nodes.push(node);
+        return this;
+    }
+    getNode(name) {
+        return this.nodes.find(n => n.name == name);
+    }
+    getNodes(name, recursive = true) {
+        const matching = [];
+        this.nodes.forEach(sn => {
+            if (recursive)
+                sn.getNodes(name).forEach(n => matching.push(n));
+            if (sn.name == name)
+                matching.push(sn);
+        });
+        return matching;
+    }
+    getValue(name) {
+        return this.values[name];
+    }
+    setValue(name, value) {
+        this.values[name] = value;
+        return this;
+    }
+}
 function parse(data) {
-    const [read, eof] = reader(data.split("\n"));
+    const [read, eof] = reader(data);
     function _parse(name) {
         read(); // Skip opening {
-        const values = {};
-        const nodes = [];
+        // const values: Record<string, Value> = {};
+        // const nodes: Node[] = [];
+        const node = new Node(name);
         let isArr = true;
         while (!eof()) {
             const next = read();
-            // console.log(`Child - ${next} Parent - ${name}`);
             if (next == "}") {
-                // console.log(`Ret: ${name}`);
-                return { name, nodes, values };
+                return node;
             }
             if (next.includes("=")) {
                 isArr = false;
                 const name = next.substring(0, next.indexOf(" ="));
                 const value = parseValue(next.substring(next.indexOf("= ") + 2));
-                values[name] = value;
+                node.setValue(name, value);
             }
             else {
-                nodes.push(_parse(next));
+                node.addNode(_parse(next));
             }
         }
     }
@@ -96,6 +123,9 @@ function save(node, dpth = 0) {
     });
     return text + "\t".repeat(dpth) + "}\n";
 }
-// fs.writeFileSync("../output.json", JSON.stringify(parse(vtsData)));
-// fs.writeFileSync("../output.vts", save(nodeData));
-export { parse, save };
+// import fs from "fs";
+// const file = fs.readFileSync("../input.vts", "utf-8");
+// const data = parse(file);
+// console.log(file.split("\t").join("").split("\r\n"));
+// fs.writeFileSync("../testout.json", JSON.stringify(data));
+export { parse, save, Node };

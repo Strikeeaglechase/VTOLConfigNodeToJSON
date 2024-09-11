@@ -1,9 +1,4 @@
-# EULA breaking files
-test.json
-vtol-missions.json
-metadatas/
-parse-meta.*
-unitIdParser.*
+*.vts
 
 # Logs
 logs
